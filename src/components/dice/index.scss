@@ -1,0 +1,83 @@
+.first-dice-comp {
+  justify-content: center;
+  align-items: center;
+}
+
+.second-dice-comp {
+  justify-content: space-between;
+}
+
+.second-dice-comp .pip-comp:nth-of-type(2) {
+  align-self: flex-end;
+}
+
+.third-dice-comp {
+  justify-content: space-between;
+}
+
+.third-dice-comp .pip-comp:nth-of-type(2) {
+  align-self: center;
+}
+
+.third-dice-comp .pip-comp:nth-of-type(3) {
+  align-self: flex-end;
+}
+
+.fourth-dice-comp,
+.sixth-dice-comp {
+  justify-content: space-between;
+}
+
+.fourth-dice-comp .column-comp,
+.sixth-dice-comp .column-comp {
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.fifth-dice-comp {
+  justify-content: space-between;
+}
+
+.fifth-dice-comp .column-comp {
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.fifth-dice-comp .column-comp:nth-of-type(2) {
+  justify-content: center;
+}
+.dice-comp-container {
+  width: 160px;
+  height: 160px;
+}
+.dice-comp {
+  display: flex;
+  padding: 20px;
+  background-color: #e7e7e7;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  box-shadow:
+    inset 0 5px white,
+    inset 0 -5px #bbb,
+    inset 5px 0 #d7d7d7,
+    inset -5px 0 #d7d7d7;
+
+  border-radius: 10%;
+}
+.dice-container-comp {
+  width: 160px;
+  height: 160px;
+}
+.column-comp {
+  display: flex;
+}
+
+.pip-comp {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  background-color: #333;
+  box-shadow: inset 0 3px #111, inset 0 -3px #555;
+}
