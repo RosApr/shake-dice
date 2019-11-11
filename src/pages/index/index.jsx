@@ -13,11 +13,10 @@ export default class Index extends Component {
       selectRange: [...'123456'].map(item => +item),
       dices: null,
       animationList: [],
-      startPositionList: [],
-      style: {},
       windowWidth: null,
       windowHeight: null,
       diceW: 160,
+      isActive: false,
     }
   }
   config = {
@@ -39,47 +38,23 @@ export default class Index extends Component {
     this.setState(() => {
       return {
         dices,
-        startPositionList: this.createRandomStartAnimation(countList),
-        animationList: this.createRandomEndAnimation(countList),
+        isActive: true,
+        animationList: this.createRandomStartAnimation(countList)
       }
     }, () => {
       this.setState(() => {
         const { animationList, } = this.state
         return {
           animationList: animationList.map(ani => {
-            return ani ? ani.export() : null
+            return ani['export'] ? ani.export() : null
           })
         } 
+      }, () => {
+        this.setState({
+          animationList: this.createRandomEndAnimation(countList),
+        })
       })
-      // this.setState(() => {
-      //   console.log('start ani')
-      //   return {
-      //     animationList: animationList.map(ani => {
-      //       console.log(ani)
-      //       return ani ? ani.export() : null
-      //     })
-      //   }
-      // }, () => {
-      //   this.setState(() => {
-      //     return {
-      //       animationList: this.createRandomEndAnimation(countList),
-      //     }
-      //   }, () => {
-      //     this.setState(() => {
-      //       console.log('end ani')
-      //       return {
-      //         animationList: animationList.map(ani => {
-      //           console.log(ani)
-      //           return ani ? ani.export() : null
-      //         })
-      //       } 
-      //     })
-      //   })
-      // })
     })
-  }
-  resetAnimation() {
-    
   }
   createRandomEndAnimation(dices = []) {
     const endXYList = this.createRandomEndXY()
@@ -94,7 +69,7 @@ export default class Index extends Component {
       animate
         .translate(endP[0], endP[1])
         .rotate(Math.random() * 540 - 360)
-        .step({duration: 5000})
+        .step({duration: 1000})
       return animate
     })
   }
@@ -125,17 +100,14 @@ export default class Index extends Component {
       windowWidth,
       windowHeight,
     } = this.state
-    // const animate = Taro.createAnimation()
-    // const randomStartX = parseInt(windowWidth + Math.random() * 10)
-    // const randomStartY = parseInt((windowHeight / 2) + Math.random() * 10)
-    // animate
-    //   .translate(randomStartX, randomStartY)
-    //   .step({duration: 0})
-    // return [randomStartX, randomStartY]
     return dices.map(() => {
+      const animate = Taro.createAnimation()
       const randomStartX = parseInt(windowWidth + Math.random() * 10)
       const randomStartY = parseInt((windowHeight / 2) + Math.random() * 10)
-      return [randomStartX, randomStartY]
+      animate
+        .translate(randomStartX, randomStartY)
+        .step({duration: 0})
+      return animate
     })
   }
   onPickerChange({detail: {value: checkedItemIndexInRange}}) {
@@ -151,35 +123,44 @@ export default class Index extends Component {
   createRandomDiceText() {
     return Math.round((Math.random() * 5)) + 1
   }
+  test() {
+    console.log('end')
+    this.setState({
+      isActive: false,
+    })
+  }
   render () {
-    const { selectRange, count, dices, animationList, startPositionList, diceW } = this.state
+    const { selectRange, count, dices, animationList, diceW, isActive } = this.state
+    const diceTotal = dices ? dices.reduce((result, current) => {
+      return result + current
+    }, 0) : 0
+    const showTotal = isActive ? {opacity: 0} : {}
     return (
-      <View className='page' onClick={this.shake.bind(this)}>
-        <Text>选择骰子数：</Text>
+      <View className='page'>
         <Picker mode='selector'
           range={selectRange}
           value={count - 1}
           onChange={this.onPickerChange.bind(this)}>
-          <View>{count}</View>
+          <View className='dice-count'>当前骰子数：{count}</View>
         </Picker>
-        {dices && dices.map((item, index) => {
-          const style = {
-            width: `${diceW}px`,
-            height: `${diceW}px`,
-            ...(Array.isArray(startPositionList[index]) ? ({
-              transform: `translate(${startPositionList[index][0]}px, ${startPositionList[index][1]}px)`,
-            }) : {}),
-          }
-          return (<View
-            style={style}
-            className='dice-container'
-            onTransitionEnd={this.test.bind(this)}
-            key={index}
-            animation={animationList[index]}
-          >
-            <Dice text={item} />
-          </View>)
-        })}
+        <View className='dice-page' onClick={this.shake.bind(this)}>
+          <View className='dice-total' style={showTotal}>{diceTotal}</View>
+          {dices && dices.map((item, index) => {
+            const style = {
+              width: `${diceW}px`,
+              height: `${diceW}px`,
+            }
+            return (<View
+              style={style}
+              className='dice-container'
+              onTransitionEnd={this.test.bind(this)}
+              key={index}
+              animation={animationList[index]}
+            >
+              <Dice text={item} />
+            </View>)
+          })}
+        </View>
       </View>
     )
   }

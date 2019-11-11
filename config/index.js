@@ -1,7 +1,7 @@
 const config = {
   projectName: 'wxProgramDice',
   date: '2019-11-5',
-  designWidth: 750,
+  designWidth: 640,
   deviceRatio: {
     '640': 2.34 / 2,
     '750': 1,
