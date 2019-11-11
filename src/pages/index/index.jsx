@@ -19,6 +19,14 @@ export default class Index extends Component {
   config = {
     navigationBarTitleText: '首页'
   }
+  componentDidMount() {
+    Taro.getSystemInfo((res) => {
+      // console.log(windowWidth)
+      // console.log(windowHeight)
+      console.log(res)
+    })
+    
+  }
   shake() {
     const { count, animationList } = this.state
     const countList = [...Array(count)]
@@ -42,22 +50,18 @@ export default class Index extends Component {
   }
   createRandomAnimation() {
     const animate = Taro.createAnimation({
-      timingFunction: 'ease-in'
+      timingFunction: 'ease'
     })
+    animate
+      .translate('', 330)
+      .step({duration: 0})
     // animate
-    //   .translate(-10, -10)
-    //   .rotate(1)
-    //   .step({duration: 3000})
     //   .translate(Math.random() * 500 - 200, Math.random() * 500 - 200)
     //   .rotate(Math.random() * 540 - 360)
     //   .step({duration: 5000})
-    animate
-      .translate(Math.random() * 500 - 200, Math.random() * 500 - 200)
-      .rotate(Math.random() * 540 - 360)
-      .step({duration: 5000})
-      .translate(-10, -10)
-      .rotate(0)
-      .step({duration: 3000})
+    //   .translate(-10, -10)
+    //   .rotate(0)
+    //   .step({duration: 3000})
     return animate
     // this.setState({
     //     ani: animate
