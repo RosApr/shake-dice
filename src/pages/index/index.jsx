@@ -13,6 +13,7 @@ export default class Index extends Component {
       selectRange: [...'123456'].map(item => +item),
       dices: null,
       animationList: [],
+      startPositionList: [],
       style: {},
       windowWidth: null,
       windowHeight: null,
@@ -32,40 +33,49 @@ export default class Index extends Component {
     })
   }
   shake() {
-    const { count, animationList } = this.state
+    const { count, } = this.state
     const countList = [...Array(count)]
     const dices = countList.map(() => this.createRandomDiceText())
     this.setState(() => {
       return {
         dices,
-        animationList: countList.map(() => this.createRandomStartAnimation()),
+        startPositionList: this.createRandomStartAnimation(countList),
+        animationList: this.createRandomEndAnimation(countList),
       }
     }, () => {
       this.setState(() => {
-        console.log('start ani')
+        const { animationList, } = this.state
         return {
           animationList: animationList.map(ani => {
-            console.log(ani)
             return ani ? ani.export() : null
           })
-        }
-      }, () => {
-        this.setState(() => {
-          return {
-            animationList: this.createRandomEndAnimation(countList),
-          }
-        }, () => {
-          this.setState(() => {
-            console.log('end ani')
-            return {
-              animationList: animationList.map(ani => {
-                console.log(ani)
-                return ani ? ani.export() : null
-              })
-            } 
-          })
-        })
+        } 
       })
+      // this.setState(() => {
+      //   console.log('start ani')
+      //   return {
+      //     animationList: animationList.map(ani => {
+      //       console.log(ani)
+      //       return ani ? ani.export() : null
+      //     })
+      //   }
+      // }, () => {
+      //   this.setState(() => {
+      //     return {
+      //       animationList: this.createRandomEndAnimation(countList),
+      //     }
+      //   }, () => {
+      //     this.setState(() => {
+      //       console.log('end ani')
+      //       return {
+      //         animationList: animationList.map(ani => {
+      //           console.log(ani)
+      //           return ani ? ani.export() : null
+      //         })
+      //       } 
+      //     })
+      //   })
+      // })
     })
   }
   resetAnimation() {
@@ -74,11 +84,10 @@ export default class Index extends Component {
   createRandomEndAnimation(dices = []) {
     const endXYList = this.createRandomEndXY()
     let randomPositionFlag = 5
-    dices.map(() => {
+    return dices.map(() => {
       const randomI = Math.round(Math.random() * randomPositionFlag)
       randomPositionFlag -= 1
       const endP = endXYList.splice(randomI, 1)[0]
-      console.log(endP)
       const animate = Taro.createAnimation({
         timingFunction: 'ease'
       })
@@ -111,18 +120,23 @@ export default class Index extends Component {
       }
     })
   }
-  createRandomStartAnimation() {
+  createRandomStartAnimation(dices = []) {
     const {
       windowWidth,
       windowHeight,
     } = this.state
-    const animate = Taro.createAnimation()
-    const randomStartX = (windowWidth + Math.random() * 10)
-    const randomStartY = ((windowHeight / 2) + Math.random() * 10)
-    animate
-      .translate(randomStartX, randomStartY)
-      .step({duration: 0})
-    return animate
+    // const animate = Taro.createAnimation()
+    // const randomStartX = parseInt(windowWidth + Math.random() * 10)
+    // const randomStartY = parseInt((windowHeight / 2) + Math.random() * 10)
+    // animate
+    //   .translate(randomStartX, randomStartY)
+    //   .step({duration: 0})
+    // return [randomStartX, randomStartY]
+    return dices.map(() => {
+      const randomStartX = parseInt(windowWidth + Math.random() * 10)
+      const randomStartY = parseInt((windowHeight / 2) + Math.random() * 10)
+      return [randomStartX, randomStartY]
+    })
   }
   onPickerChange({detail: {value: checkedItemIndexInRange}}) {
     const { selectRange } = this.state
@@ -138,7 +152,7 @@ export default class Index extends Component {
     return Math.round((Math.random() * 5)) + 1
   }
   render () {
-    const { selectRange, count, dices, animationList, diceW } = this.state
+    const { selectRange, count, dices, animationList, startPositionList, diceW } = this.state
     return (
       <View className='page' onClick={this.shake.bind(this)}>
         <Text>选择骰子数：</Text>
@@ -148,23 +162,24 @@ export default class Index extends Component {
           onChange={this.onPickerChange.bind(this)}>
           <View>{count}</View>
         </Picker>
-        {dices && dices.map((item, index) => (
-          <View
-            style={{width: `${diceW}px`, height: `${diceW}px`,}}
+        {dices && dices.map((item, index) => {
+          const style = {
+            width: `${diceW}px`,
+            height: `${diceW}px`,
+            ...(Array.isArray(startPositionList[index]) ? ({
+              transform: `translate(${startPositionList[index][0]}px, ${startPositionList[index][1]}px)`,
+            }) : {}),
+          }
+          return (<View
+            style={style}
             className='dice-container'
             onTransitionEnd={this.test.bind(this)}
             key={index}
             animation={animationList[index]}
           >
             <Dice text={item} />
-          </View>
-        ))}
-        {/* <Dice text={1} />
-        <Dice text={2} />
-        <Dice text={3} />
-        <Dice text={4} />
-        <Dice text={5} />
-        <Dice text={6} /> */}
+          </View>)
+        })}
       </View>
     )
   }
