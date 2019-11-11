@@ -6,6 +6,7 @@ import {
 } from '@tarojs/components'
 import './index.scss'
 import Dice from '../../components/dice/index'
+import audioSrc from '../../assets/dice.mp3'
 export default class Index extends Component {
   constructor() {
     this.state = {
@@ -17,25 +18,44 @@ export default class Index extends Component {
       windowHeight: null,
       diceW: 160,
       isActive: false,
+      audioInstance: null,
+      isActiveShake: false,
     }
   }
   config = {
-    navigationBarTitleText: '首页'
+    navigationBarTitleText: '摇骰子（吹牛）'
   }
   componentDidMount() {
-    const { windowWidth, windowHeight, pixelRatio } = Taro.getSystemInfoSync()
-    const { diceW } = this.state
+    const { windowWidth, windowHeight, pixelRatio, } = Taro.getSystemInfoSync()
+    const { diceW, } = this.state
     this.setState({
       windowWidth,
       windowHeight,
       diceW: parseInt((2 / pixelRatio) * diceW),
     })
+    this.initAudio(audioSrc, false)
+    Taro.startAccelerometer()
+    Taro.onAccelerometerChange((config) => {
+      const { isActiveShake } = this.state
+      const isShake = (config.x > 1)
+        || (config.z > 1)
+        || (config.y > 1)
+      if(isShake && !isActiveShake) {
+        this.setState({
+          isActiveShake: true,
+        })
+        this.shake()
+      }
+    })
   }
   shake() {
-    const { count, } = this.state
+    const { count, audioInstance } = this.state
     const countList = [...Array(count)]
     const dices = countList.map(() => this.createRandomDiceText())
     this.setState(() => {
+      if(audioInstance) {
+        audioInstance.seek(0)
+      }
       return {
         dices,
         isActive: true,
@@ -54,6 +74,23 @@ export default class Index extends Component {
           animationList: this.createRandomEndAnimation(countList),
         })
       })
+    })
+  }
+  initAudio(src, startPlay = false) {
+    const { audioInstance } = this.state
+    if(audioInstance || !src) return
+    const _audioInstance = Taro.createInnerAudioContext()
+    this.setState(() => {
+        return {
+            audioInstance: _audioInstance
+        }
+    }, () => {
+        _audioInstance.src = src
+        _audioInstance.autoplay = false
+        _audioInstance.loop = false
+        _audioInstance.onSeeked(() => {
+            _audioInstance.play()
+        })
     })
   }
   createRandomEndAnimation(dices = []) {
@@ -127,6 +164,7 @@ export default class Index extends Component {
     console.log('end')
     this.setState({
       isActive: false,
+      isActiveShake: false,
     })
   }
   render () {
@@ -141,7 +179,11 @@ export default class Index extends Component {
           range={selectRange}
           value={count - 1}
           onChange={this.onPickerChange.bind(this)}>
-          <View className='dice-count'>当前骰子数：{count}</View>
+          <View className='dice-count'>
+            当前骰子数：
+            <Text className='current-dice-length'>{count}</Text>
+            （点击修改）
+          </View>
         </Picker>
         <View className='dice-page' onClick={this.shake.bind(this)}>
           <View className='dice-total' style={showTotal}>{diceTotal}</View>
