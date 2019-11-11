@@ -14,18 +14,19 @@ export default class Index extends Component {
       dices: null,
       animationList: [],
       style: {},
+      windowWidth: null,
+      windowHeight: null,
     }
   }
   config = {
     navigationBarTitleText: '首页'
   }
   componentDidMount() {
-    Taro.getSystemInfo((res) => {
-      // console.log(windowWidth)
-      // console.log(windowHeight)
-      console.log(res)
+    const { windowWidth, windowHeight } = Taro.getSystemInfoSync()
+    this.setState({
+      windowWidth,
+      windowHeight,
     })
-    
   }
   shake() {
     const { count, animationList } = this.state
@@ -34,13 +35,18 @@ export default class Index extends Component {
     this.setState(() => {
       return {
         dices,
-        animationList: countList.map(() => this.createRandomAnimation()),
+        animationList: countList.map(() => this.createRandomStartAnimation()),
       }
     }, () => {
-      this.setState({
-        animationList: animationList.map(ani => {
-          console.log(ani)
-          return ani ? ani.export() : null
+      this.setState(() => {
+        return {
+          animationList: animationList.map(ani => {
+            return !ani && ani.export()
+          })
+        }
+      }, () => {
+        this.setState({
+          animationList: countList.map(() => this.createRandomEndAnimation()),
         })
       })
     })
@@ -48,27 +54,30 @@ export default class Index extends Component {
   resetAnimation() {
     
   }
-  createRandomAnimation() {
+  createRandomEndAnimation() {
     const animate = Taro.createAnimation({
       timingFunction: 'ease'
     })
+    const randomEndX = Math.random() * 500 - 200
+    const randomEndY = Math.random() * 500 - 200
     animate
-      .translate('', 330)
-      .step({duration: 0})
-    // animate
-    //   .translate(Math.random() * 500 - 200, Math.random() * 500 - 200)
-    //   .rotate(Math.random() * 540 - 360)
-    //   .step({duration: 5000})
-    //   .translate(-10, -10)
-    //   .rotate(0)
-    //   .step({duration: 3000})
+      .translate(randomEndX, randomEndY)
+      .rotate(Math.random() * 540 - 360)
+      .step({duration: 5000})
     return animate
-    // this.setState({
-    //     ani: animate
-    // })
-    // setTimeout(() => {
-    //     this.setState({ani: animate.export()})
-    // }, 50)
+  }
+  createRandomStartAnimation() {
+    const {
+      windowWidth,
+      windowHeight,
+    } = this.state
+    const animate = Taro.createAnimation()
+    const randomStartX = (windowWidth + Math.random() * 10)
+    const randomStartY = ((windowHeight / 2) + Math.random() * 10)
+    animate
+      .translate(randomStartX, randomStartY)
+      .step({duration: 0})
+    return animate
   }
   onPickerChange({detail: {value: checkedItemIndexInRange}}) {
     const { selectRange } = this.state
@@ -90,6 +99,7 @@ export default class Index extends Component {
         <Text>选择骰子数：</Text>
         <Picker mode='selector'
           range={selectRange}
+          value={count - 1}
           onChange={this.onPickerChange.bind(this)}>
           <View>{count}</View>
         </Picker>
