@@ -16,16 +16,19 @@ export default class Index extends Component {
       style: {},
       windowWidth: null,
       windowHeight: null,
+      diceW: 160,
     }
   }
   config = {
     navigationBarTitleText: '首页'
   }
   componentDidMount() {
-    const { windowWidth, windowHeight } = Taro.getSystemInfoSync()
+    const { windowWidth, windowHeight, pixelRatio } = Taro.getSystemInfoSync()
+    const { diceW } = this.state
     this.setState({
       windowWidth,
       windowHeight,
+      diceW: parseInt((2 / pixelRatio) * diceW),
     })
   }
   shake() {
@@ -55,6 +58,7 @@ export default class Index extends Component {
     
   }
   createRandomEndAnimation() {
+    const randomEndPositionList = this.createRandomEndXY()
     const animate = Taro.createAnimation({
       timingFunction: 'ease'
     })
@@ -65,6 +69,29 @@ export default class Index extends Component {
       .rotate(Math.random() * 540 - 360)
       .step({duration: 5000})
     return animate
+  }
+  createRandomEndXY() {
+    const { diceW, windowWidth, windowHeight } = this.state
+    const widthGrid = windowWidth / 3
+    const heightGrid = windowHeight / 2
+    const diceWidth = diceW
+    return [...'012345'].map((val) => {
+      const rX = parseInt(this.getRandomInRange((widthGrid - diceWidth/2) * .6, (widthGrid - diceWidth/2)))
+      const rY = parseInt(this.getRandomInRange((heightGrid - diceWidth/2) * .6, (heightGrid - diceWidth/2)))
+      if(val == 0) {
+        return [rX, rY]
+      } else if(val == 1) {
+        return [rX + widthGrid * .8, rY]
+      } else if(val == 2) {
+        return [rX + widthGrid * 1.5, rY]
+      } else if(val == 3) {
+        return [rX, windowHeight - rY]
+      } else if(val == 4) {
+        return [rX + widthGrid  * .8, windowHeight - rY]
+      } else if(val == 5) {
+        return [rX + widthGrid * 1.5, windowHeight - rY]
+      }
+    })
   }
   createRandomStartAnimation() {
     const {
@@ -105,6 +132,7 @@ export default class Index extends Component {
         </Picker>
         {dices && dices.map((item, index) => (
           <View
+            style={{width: , height: ,}}
             className='dice-container'
             onTransitionEnd={this.test.bind(this)}
             key={index}
