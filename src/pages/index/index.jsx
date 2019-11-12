@@ -141,7 +141,7 @@ export default class Index extends Component {
   createRandomEndXY() {
     const { diceW, windowWidth, windowHeight } = this.state
     const widthGrid = windowWidth / 3
-    const heightGrid = windowHeight / 2
+    const heightGrid = windowHeight / 3
     return [...'012345'].map((val) => {
       const rX = parseInt(this.getRandomInRange((widthGrid - diceW/2) * .6, (widthGrid - diceW/2)))
       const rY = parseInt(this.getRandomInRange((heightGrid - diceW/2) * .6, (heightGrid - diceW/2)))
@@ -152,11 +152,11 @@ export default class Index extends Component {
       } else if(val == 2) {
         return [parseInt(rX + widthGrid * 1.5), rY]
       } else if(val == 3) {
-        return [rX, windowHeight - rY]
+        return [rX, heightGrid + rY]
       } else if(val == 4) {
-        return [parseInt(rX + widthGrid  * .8), windowHeight - rY]
+        return [parseInt(rX + widthGrid  * .8), heightGrid + rY]
       } else if(val == 5) {
-        return [parseInt(rX + widthGrid * 1.5), windowHeight - rY]
+        return [parseInt(rX + widthGrid * 1.5), heightGrid + rY]
       }
     })
   }
