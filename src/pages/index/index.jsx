@@ -2,7 +2,6 @@ import Taro, { Component } from '@tarojs/taro'
 import {
   View,
   Text,
-  Picker
 } from '@tarojs/components'
 import './index.scss'
 import Dice from '../../components/dice/index'
@@ -54,7 +53,8 @@ export default class Index extends Component {
   }
   check(type, item) {
     this.setState({
-      [type]: item
+      [type]: item,
+      dices: null,
     })
   }
   renderCheckItem(list = [], type = '') {
@@ -67,7 +67,7 @@ export default class Index extends Component {
             const isCheckClass = 'check ' + (item === this.state[type] ? 'check-active' : '')
             return (
               <View className='item' onClick={this.check.bind(this, type, item)}>
-                <Text className='label' style={style}>{item}</Text>
+                <Text className='label' style={style}>{type === 'diceActive' ? `${item}个` : item}</Text>
                 <Text className={isCheckClass}>✔</Text>
               </View>
             )
@@ -175,13 +175,6 @@ export default class Index extends Component {
       return animate
     })
   }
-  onPickerChange({detail: {value: checkedItemIndexInRange}}) {
-    const { diceSelectRange } = this.state
-    this.setState({
-      diceActive: diceSelectRange[checkedItemIndexInRange],
-      dices: null
-    })
-  }
   getRandomInRange(min, max) {
     return +((Math.random() * ((max-1) - (min+1))).toFixed(2)) + (min+1);
   }
@@ -203,7 +196,6 @@ export default class Index extends Component {
     const {
       diceSelectRange,
       colorRange,
-      diceActive,
       dices,
       colorActive,
       animationList,
@@ -219,20 +211,10 @@ export default class Index extends Component {
     const menuContentLayerClass = 'check-container-layer ' + (isShowMenuContent ? 'check-container-layer-show': '')
     return (
       <View className='page' style={{backgroundImage: `url(${bg})`}}>
-        <Picker mode='selector'
-          range={diceSelectRange}
-          value={diceActive - 1}
-          onChange={this.onPickerChange.bind(this)}>
-          <View className='dice-count'>
-            当前骰子数：
-            <Text className='current-dice-length'>{diceActive}</Text>
-            （点击修改）
-          </View>
-        </Picker>
         <View className='menu-btn' onClick={this.showMenuContent.bind(this)}></View>
-        <View className={menuContentLayerClass}></View>
+        <View onClick={this.showMenuContent.bind(this, false)} className={menuContentLayerClass}></View>
         <View className={menuContentClass}>
-          <View className='close-check-container-btn'></View>
+          <View className='close-check-container-btn' onClick={this.showMenuContent.bind(this, false)}></View>
           <View className='check-container-title'>骰子数量：</View>
           {
             this.renderCheckItem(diceSelectRange, 'diceActive')

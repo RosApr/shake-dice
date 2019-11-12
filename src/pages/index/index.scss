@@ -6,6 +6,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-color: #101130;
+  background-size: cover;
 }
 .dice-container {
   position: absolute;
@@ -14,19 +15,6 @@
   top: 0;
   left: 0;
   z-index: 1;
-}
-.dice-count {
-  position: absolute;
-  text-align: left;
-  top: 0;
-  left: 0;
-  padding: 20px 60px;
-  z-index: 2;
-  color: #fff;
-  
-}
-.current-dice-length {
-  font-size: 40px;
 }
 .dice-page {
   width: 100%;
@@ -70,9 +58,10 @@
   left: 0;
   right: 0;
   background-color: #fff;
-  padding: 100px 50px;
+  padding: 0 50px 40px;
   z-index: 10;
   transition: top 1s, bottom 1s;
+  box-shadow: 1px 1px 0 2px #f0f0f0;
 }
 .check-container-active {
   bottom: 0;
@@ -91,37 +80,61 @@
 .check-container-layer-show {
   display: block;
 }
-.check-container-title:nth-child(1) {
-  margin-top: 0!important;
-}
 .check-container-title {
-  font-size: 40px;
+  font-size: 32px;
   color: #333;
   margin-top: 40px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+}
+.close-check-container-btn {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  width: 60px;
+  height: 60px;
+  &:after, &:before {
+    content: '';
+    width: 1Px;
+    height: 30px;
+    background-color: #333;
+    position: absolute;
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform-origin: center;
+  }
+  &:before {
+    transform: rotateZ(40deg)
+  }
+  &:after {
+    transform: rotateZ(-40deg)
+  }
 }
 .item-list {
-
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-flow: row wrap;
 }
 .item {
-  padding-right: 40px;
-  vertical-align: middle;
-  display: inline-block;
+  flex: 0 1 25%;
   font-size: 0;
+  margin-bottom: 20px;
 }
 .label {
-  font-size: 40px;
+  font-size: 28px;
   box-sizing: border-box;
   color: #333;
   padding-right: 10px;
 }
 .check {
   border: 1Px solid #333;
-  font-size: 30px;
-  width: 40px;
+  font-size: 28px;
+  width: 36px;
   text-align: center;
-  height: 40px;
-  line-height: 40px;
+  height: 36px;
+  line-height: 36px;
   box-sizing: border-box;
   display: inline-block;
   color: transparent;
