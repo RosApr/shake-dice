@@ -206,7 +206,7 @@ export default class Index extends Component {
     const diceTotal = dices ? dices.reduce((result, current) => {
       return result + current
     }, 0) : 0
-    const showTotal = isActive ? {opacity: 0} : {}
+    const showTotal = isActive ? {opacity: 0, visibility: "hidden"} : {}
     const menuContentClass = 'check-container ' + (isShowMenuContent ? 'check-container-active': '')
     const menuContentLayerClass = 'check-container-layer ' + (isShowMenuContent ? 'check-container-layer-show': '')
     return (
