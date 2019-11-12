@@ -7,11 +7,11 @@ import {
 import './index.scss'
 import Dice from '../../components/dice/index'
 import audioSrc from '../../assets/dice.mp3'
+import bg from '../../assets/bg.jpg'
 export default class Index extends Component {
   constructor() {
     this.state = {
-      count: 3,
-      selectRange: [...'123456'].map(item => +item),
+      diceSelectRange: [...'123456'].map(item => +item),
       dices: null,
       animationList: [],
       windowWidth: null,
@@ -20,10 +20,14 @@ export default class Index extends Component {
       isActive: false,
       audioInstance: null,
       isActiveShake: false,
+      colorRange: ['grey', 'orange', 'red'],
+      colorActive: 'grey',
+      diceActive: 3,
+      isShowMenuContent: false,
     }
   }
   config = {
-    navigationBarTitleText: '摇骰子（吹牛）'
+    navigationBarTitleText: '比个大小吧'
   }
   componentDidMount() {
     const { windowWidth, windowHeight, pixelRatio, } = Taro.getSystemInfoSync()
@@ -48,9 +52,33 @@ export default class Index extends Component {
       }
     })
   }
+  check(type, item) {
+    this.setState({
+      [type]: item
+    })
+  }
+  renderCheckItem(list = [], type = '') {
+    return (
+      <View className='item-list'>
+        {
+          list.map((item) => {
+            const changeLabelColor = type === 'colorActive'
+            const style = changeLabelColor ? {color: item} : {}
+            const isCheckClass = 'check ' + (item === this.state[type] ? 'check-active' : '')
+            return (
+              <View className='item' onClick={this.check.bind(this, type, item)}>
+                <Text className='label' style={style}>{item}</Text>
+                <Text className={isCheckClass}>✔</Text>
+              </View>
+            )
+          })
+        }
+      </View>
+    )
+  }
   shake() {
-    const { count, audioInstance } = this.state
-    const countList = [...Array(count)]
+    const { diceActive, audioInstance } = this.state
+    const countList = [...Array(diceActive)]
     const dices = countList.map(() => this.createRandomDiceText())
     this.setState(() => {
       if(audioInstance) {
@@ -148,9 +176,9 @@ export default class Index extends Component {
     })
   }
   onPickerChange({detail: {value: checkedItemIndexInRange}}) {
-    const { selectRange } = this.state
+    const { diceSelectRange } = this.state
     this.setState({
-      count: selectRange[checkedItemIndexInRange],
+      diceActive: diceSelectRange[checkedItemIndexInRange],
       dices: null
     })
   }
@@ -160,31 +188,60 @@ export default class Index extends Component {
   createRandomDiceText() {
     return Math.round((Math.random() * 5)) + 1
   }
-  test() {
-    console.log('end')
+  diceAnimationEnd() {
     this.setState({
       isActive: false,
       isActiveShake: false,
     })
   }
+  showMenuContent(status = false) {
+    this.setState({
+      isShowMenuContent: status
+    })
+  }
   render () {
-    const { selectRange, count, dices, animationList, diceW, isActive } = this.state
+    const {
+      diceSelectRange,
+      colorRange,
+      diceActive,
+      dices,
+      colorActive,
+      animationList,
+      diceW,
+      isActive,
+      isShowMenuContent,
+    } = this.state
     const diceTotal = dices ? dices.reduce((result, current) => {
       return result + current
     }, 0) : 0
     const showTotal = isActive ? {opacity: 0} : {}
+    const menuContentClass = 'check-container ' + (isShowMenuContent ? 'check-container-active': '')
+    const menuContentLayerClass = 'check-container-layer ' + (isShowMenuContent ? 'check-container-layer-show': '')
     return (
-      <View className='page'>
+      <View className='page' style={{backgroundImage: `url(${bg})`}}>
         <Picker mode='selector'
-          range={selectRange}
-          value={count - 1}
+          range={diceSelectRange}
+          value={diceActive - 1}
           onChange={this.onPickerChange.bind(this)}>
           <View className='dice-count'>
             当前骰子数：
-            <Text className='current-dice-length'>{count}</Text>
+            <Text className='current-dice-length'>{diceActive}</Text>
             （点击修改）
           </View>
         </Picker>
+        <View className='menu-btn' onClick={this.showMenuContent.bind(this)}></View>
+        <View className={menuContentLayerClass}></View>
+        <View className={menuContentClass}>
+          <View className='close-check-container-btn'></View>
+          <View className='check-container-title'>骰子数量：</View>
+          {
+            this.renderCheckItem(diceSelectRange, 'diceActive')
+          }
+          <View className='check-container-title'>骰子颜色：</View>
+          {
+            this.renderCheckItem(colorRange, 'colorActive')
+          }
+        </View>
         <View className='dice-page' onClick={this.shake.bind(this)}>
           <View className='dice-total' style={showTotal}>{diceTotal}</View>
           {dices && dices.map((item, index) => {
@@ -195,11 +252,11 @@ export default class Index extends Component {
             return (<View
               style={style}
               className='dice-container'
-              onTransitionEnd={this.test.bind(this)}
+              onTransitionEnd={this.diceAnimationEnd.bind(this)}
               key={index}
               animation={animationList[index]}
             >
-              <Dice text={item} />
+              <Dice text={item} bgColorClass={colorActive} />
             </View>)
           })}
         </View>

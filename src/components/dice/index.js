@@ -15,23 +15,24 @@ class Dice extends Component {
         addGlobalClass: true,
     }
     createRandomDice() {
-        const { text } = this.props
+        const { text, bgColorClass } = this.props
+        const _class = ` ${bgColorClass} dice-comp`
         if(text === 1){
           return (
-            <View class="first-dice-comp dice-comp">
+            <View class={('first-dice-comp' + _class)}>
               <View class="pip-comp"></View>
             </View>
           )
         } else if(text === 2){
           return (
-            <View class="second-dice-comp dice-comp">
+            <View class={('second-dice-comp' + _class)}>
               <View class="pip-comp"></View>
               <View class="pip-comp"></View>
             </View>
           )
         } else if(text === 3){
           return (
-            <View class="third-dice-comp dice-comp">
+            <View class={('third-dice-comp' + _class)}>
               <View class="pip-comp"></View>
               <View class="pip-comp"></View>
               <View class="pip-comp"></View>
@@ -39,7 +40,7 @@ class Dice extends Component {
           )
         } else if(text === 4){
           return (
-            <View class="fourth-dice-comp dice-comp">
+            <View class={('fourth-dice-comp' + _class)}>
               <View class="column-comp">
                 <View class="pip-comp"></View>
                 <View class="pip-comp"></View>
@@ -52,7 +53,7 @@ class Dice extends Component {
           )
         } else if(text === 5){
           return (
-            <View class="fifth-dice-comp dice-comp">
+            <View class={('fifth-dice-comp' + _class)}>
               <View class="column-comp">
                 <View class="pip-comp"></View>
                 <View class="pip-comp"></View>
@@ -68,7 +69,7 @@ class Dice extends Component {
           )
         } else if(text === 6){
           return (
-            <View class="sixth-dice-comp dice-comp">
+            <View class={('sixth-dice-comp' + _class)}>
               <View class="column-comp">
                 <View class="pip-comp"></View>
                 <View class="pip-comp"></View>
@@ -95,8 +96,10 @@ class Dice extends Component {
 }
 Dice.defaultProps = {
     text: 1,
+    bgColorClass: 'grey'
 }
 Dice.propTypes = {
     text: PropTypes.number,
+    bgColorClass: PropTypes.string,
 }
 export default Dice
