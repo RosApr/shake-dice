@@ -1,0 +1,32 @@
+.item-list {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-flow: row wrap;
+  }
+  .item {
+    flex: 0 1 25%;
+    font-size: 0;
+    margin-bottom: 20px;
+  }
+  .label {
+    font-size: 28px;
+    box-sizing: border-box;
+    color: #333;
+    padding-right: 10px;
+  }
+  .check {
+    border: 1Px solid #333;
+    font-size: 28px;
+    width: 36px;
+    text-align: center;
+    height: 36px;
+    line-height: 36px;
+    box-sizing: border-box;
+    display: inline-block;
+    color: transparent;
+  }
+  .check-active {
+    color: #333
+  }

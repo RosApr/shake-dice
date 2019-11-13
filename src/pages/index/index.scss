@@ -62,7 +62,7 @@
   z-index: 10;
   transition: transform 300ms cubic-bezier(.36,.66,.04,1);
   box-shadow: 1px 1px 0 4px #f0f0f0;
-  transform: translate3d(0, 100%, 0);
+  transform: translate3d(0, 101%, 0);
 }
 .check-container-active {
   transform: translate3d(0, 0, 0);
@@ -109,36 +109,4 @@
   &:after {
     transform: rotateZ(-40deg)
   }
-}
-.item-list {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-flow: row wrap;
-}
-.item {
-  flex: 0 1 25%;
-  font-size: 0;
-  margin-bottom: 20px;
-}
-.label {
-  font-size: 28px;
-  box-sizing: border-box;
-  color: #333;
-  padding-right: 10px;
-}
-.check {
-  border: 1Px solid #333;
-  font-size: 28px;
-  width: 36px;
-  text-align: center;
-  height: 36px;
-  line-height: 36px;
-  box-sizing: border-box;
-  display: inline-block;
-  color: transparent;
-}
-.check-active {
-  color: #333
 }

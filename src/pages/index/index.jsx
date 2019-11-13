@@ -5,12 +5,14 @@ import {
 } from '@tarojs/components'
 import './index.scss'
 import Dice from '../../components/dice/index'
+import CheckItemList from '../../components/checkItemList/index'
 import audioSrc from '../../assets/dice.mp3'
 import bg from '../../assets/bg.jpg'
+import { DICE_TYPE, COLOR_TYPE } from '../../constants.js'
 export default class Index extends Component {
   constructor() {
     this.state = {
-      diceSelectRange: [...'123456'].map(item => +item),
+      diceRange: [...'123456'].map(item => +item),
       dices: null,
       animationList: [],
       windowWidth: null,
@@ -26,7 +28,7 @@ export default class Index extends Component {
     }
   }
   config = {
-    navigationBarTitleText: '比个大小吧'
+    navigationBarTitleText: '嗨翻骰子'
   }
   componentDidMount() {
     const { windowWidth, windowHeight, pixelRatio, } = Taro.getSystemInfoSync()
@@ -51,30 +53,12 @@ export default class Index extends Component {
       }
     })
   }
-  check(type, item) {
-    this.setState({
-      [type]: item,
-      dices: null,
-    })
-  }
-  renderCheckItem(list = [], type = '') {
-    return (
-      <View className='item-list'>
-        {
-          list.map((item) => {
-            const changeLabelColor = type === 'colorActive'
-            const style = changeLabelColor ? {color: item} : {}
-            const isCheckClass = 'check ' + (item === this.state[type] ? 'check-active' : '')
-            return (
-              <View className='item' onClick={this.check.bind(this, type, item)}>
-                <Text className='label' style={style}>{type === 'diceActive' ? `${item}个` : item}</Text>
-                <Text className={isCheckClass}>✔</Text>
-              </View>
-            )
-          })
-        }
-      </View>
-    )
+  check(item, type) {
+    const state = {
+      [type === DICE_TYPE ? 'diceActive' : 'colorActive'] : item,
+      dices: null
+    }
+    this.setState(state)
   }
   shake() {
     const { diceActive, audioInstance } = this.state
@@ -194,8 +178,9 @@ export default class Index extends Component {
   }
   render () {
     const {
-      diceSelectRange,
+      diceRange,
       colorRange,
+      diceActive,
       dices,
       colorActive,
       animationList,
@@ -216,13 +201,19 @@ export default class Index extends Component {
         <View className={menuContentClass}>
           <View className='close-check-container-btn' onClick={this.showMenuContent.bind(this, false)}></View>
           <View className='check-container-title'>骰子数量：</View>
-          {
-            this.renderCheckItem(diceSelectRange, 'diceActive')
-          }
+          <CheckItemList
+            list={diceRange}
+            listType={DICE_TYPE}
+            active={diceActive}
+            onItemClick={this.check.bind(this)}
+          />
           <View className='check-container-title'>骰子颜色：</View>
-          {
-            this.renderCheckItem(colorRange, 'colorActive')
-          }
+          <CheckItemList
+            list={colorRange}
+            listType={COLOR_TYPE}
+            active={colorActive}
+            onItemClick={this.check.bind(this)}
+          />
         </View>
         <View className='dice-page' onClick={this.shake.bind(this)}>
           <View className='dice-total' style={showTotal}>{diceTotal}</View>
