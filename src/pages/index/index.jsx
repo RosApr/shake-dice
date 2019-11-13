@@ -1,7 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import {
   View,
-  Text,
+  Image,
 } from '@tarojs/components'
 import './index.scss'
 import Dice from '../../components/dice/index'
@@ -33,10 +33,12 @@ export default class Index extends Component {
   componentDidMount() {
     const { windowWidth, windowHeight, pixelRatio, } = Taro.getSystemInfoSync()
     const { diceW, } = this.state
+    const _diceW = parseInt((2 / pixelRatio) * diceW)
+    const windowWidthPer = parseInt(windowWidth / 3)
     this.setState({
       windowWidth,
       windowHeight,
-      diceW: parseInt((2 / pixelRatio) * diceW),
+      diceW: parseInt((_diceW > windowWidthPer ? windowWidthPer * .6 : _diceW * .8)),
     })
     this.initAudio(audioSrc, false)
     Taro.startAccelerometer()
@@ -127,20 +129,20 @@ export default class Index extends Component {
     const widthGrid = windowWidth / 3
     const heightGrid = windowHeight / 3
     return [...'012345'].map((val) => {
-      const rX = parseInt(this.getRandomInRange((widthGrid - diceW/2) * .6, (widthGrid - diceW/2)))
-      const rY = parseInt(this.getRandomInRange((heightGrid - diceW/2) * .6, (heightGrid - diceW/2)))
+      const rX = parseInt(this.getRandomInRange(0, (widthGrid - diceW)))
+      const rY = parseInt(this.getRandomInRange((heightGrid - diceW) * .6, (heightGrid - diceW)))
       if(val == 0) {
         return [rX, rY]
       } else if(val == 1) {
-        return [parseInt(rX + widthGrid * .8), rY]
+        return [parseInt(rX + widthGrid), rY]
       } else if(val == 2) {
-        return [parseInt(rX + widthGrid * 1.5), rY]
+        return [parseInt(rX + widthGrid * 2), rY]
       } else if(val == 3) {
         return [rX, heightGrid + rY]
       } else if(val == 4) {
-        return [parseInt(rX + widthGrid  * .8), heightGrid + rY]
+        return [parseInt(rX + widthGrid), heightGrid + rY]
       } else if(val == 5) {
-        return [parseInt(rX + widthGrid * 1.5), heightGrid + rY]
+        return [parseInt(rX + widthGrid * 2), heightGrid + rY]
       }
     })
   }
@@ -195,7 +197,8 @@ export default class Index extends Component {
     const menuContentClass = 'check-container ' + (isShowMenuContent ? 'check-container-active': '')
     const menuContentLayerClass = 'check-container-layer ' + (isShowMenuContent ? 'check-container-layer-show': '')
     return (
-      <View className='page' style={{backgroundImage: `url(${bg})`}}>
+      <View className='page'>
+        <Image className='bg' src={bg} />
         <View className='menu-btn' onClick={this.showMenuContent.bind(this)}></View>
         <View onClick={this.showMenuContent.bind(this, false)} className={menuContentLayerClass}></View>
         <View className={menuContentClass}>
