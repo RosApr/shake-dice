@@ -6,6 +6,7 @@ import {
 import './index.scss'
 import Dice from '../../components/dice/index'
 import CheckItemList from '../../components/checkItemList/index'
+import ActionSheet from '../../components/actionSheet/index'
 import audioSrc from '../../assets/dice.mp3'
 import bg from '../../assets/bg.jpg'
 import { DICE_TYPE, COLOR_TYPE } from '../../constants.js'
@@ -194,15 +195,17 @@ export default class Index extends Component {
       return result + current
     }, 0) : 0
     const showTotal = isActive ? {opacity: 0, visibility: "hidden"} : {}
-    const menuContentClass = 'check-container ' + (isShowMenuContent ? 'check-container-active': '')
-    const menuContentLayerClass = 'check-container-layer ' + (isShowMenuContent ? 'check-container-layer-show': '')
     return (
       <View className='page'>
         <Image className='bg' src={bg} />
-        <View className='menu-btn' onClick={this.showMenuContent.bind(this)}></View>
-        <View onClick={this.showMenuContent.bind(this, false)} className={menuContentLayerClass}></View>
-        <View className={menuContentClass}>
-          <View className='close-check-container-btn' onClick={this.showMenuContent.bind(this, false)}></View>
+        <View
+          className='menu-btn'
+          onClick={this.showMenuContent.bind(this, true)}
+        ></View>
+        <ActionSheet
+          active={isShowMenuContent}
+          onActionClose={this.showMenuContent.bind(this)}
+        >
           <View className='check-container-title'>骰子数量：</View>
           <CheckItemList
             list={diceRange}
@@ -217,7 +220,7 @@ export default class Index extends Component {
             active={colorActive}
             onItemClick={this.check.bind(this)}
           />
-        </View>
+        </ActionSheet>
         <View className='dice-page' onClick={this.shake.bind(this)}>
           <View className='dice-total' style={showTotal}>{diceTotal}</View>
           {dices && dices.map((item, index) => {
